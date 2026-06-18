@@ -1,0 +1,44 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String         @id @default(uuid())
+  email     String         @unique
+  createdAt DateTime       @default(now())
+  sessions  Session[]
+  cards     BirthdayWish[]
+}
+
+model VerificationToken {
+  token     String   @id @default(uuid())
+  email     String
+  expires   DateTime
+  createdAt DateTime @default(now())
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires   DateTime
+  createdAt DateTime @default(now())
+}
+
+model BirthdayWish {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  age       Int?
+  wishes    String
+  theme     String
+  music     String
+  effects   String[]
+  images    String[]
+  createdAt DateTime @default(now())
+}
