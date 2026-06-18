@@ -14,6 +14,33 @@ interface CardWishState extends CardConfig {
   images?: string[];
 }
 
+const TRANSLATIONS = {
+  en: {
+    loading: "Unpacking birthday wishes...",
+    unableToLoad: "Unable to Load Card",
+    createYourOwn: "Create Your Own Card",
+    hello: "Hello, ",
+    happyBirthdayTo: "Happy Birthday, ",
+    gestureDesc: "A little sweet gesture for you! Make a wish and blow out the candles.",
+    happyBirthday: "Happy Birthday!",
+    age: "Age",
+    clickPhoto: "Click photo to slide",
+    blowAgain: "Blow Candles Again",
+  },
+  si: {
+    loading: "උපන් දින සුභපැතුම් සකසමින් පවතී...",
+    unableToLoad: "කාඩ්පත පූරණය කිරීමට නොහැකි විය",
+    createYourOwn: "ඔබේම සුභපැතුම් පතක් සාදන්න",
+    hello: "ආයුබෝවන්, ",
+    happyBirthdayTo: "සුභ උපන්දිනයක්, ",
+    gestureDesc: "ඔබ වෙනුවෙන් කුඩා මිහිරි සුභපැතුමක්! ප්‍රාර්ථනාවක් කර ඉටිපන්දම් පිඹ නිවා දමන්න.",
+    happyBirthday: "සුභ උපන්දිනයක්!",
+    age: "වයස",
+    clickPhoto: "ඊළඟ පින්තූරය සඳහා ක්ලික් කරන්න",
+    blowAgain: "නැවත ඉටිපන්දම් පිඹින්න",
+  }
+};
+
 // A client component that extracts and decodes search params, wrapped in Suspense
 function WishContent() {
   const searchParams = useSearchParams();
@@ -25,6 +52,36 @@ function WishContent() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [lang, setLang] = useState<'en' | 'si'>('en');
+
+  // Sync language selection
+  useEffect(() => {
+    const langParam = searchParams.get('lang');
+    if (langParam === 'si' || langParam === 'en') {
+      setTimeout(() => {
+        setLang(langParam);
+      }, 0);
+    } else {
+      const savedLang = localStorage.getItem('studio-lang');
+      if (savedLang === 'si' || savedLang === 'en') {
+        setTimeout(() => {
+          setLang(savedLang as 'si' | 'en');
+        }, 0);
+      }
+    }
+  }, [searchParams]);
+
+  const toggleLanguage = () => {
+    setLang(prev => {
+      const next = prev === 'en' ? 'si' : 'en';
+      localStorage.setItem('studio-lang', next);
+      return next;
+    });
+  };
+
+  const t = (key: keyof typeof TRANSLATIONS['en']) => {
+    return TRANSLATIONS[lang][key] || TRANSLATIONS['en'][key];
+  };
   
   // Custom font loading dynamically via standard links or classes
   useEffect(() => {
@@ -308,26 +365,41 @@ function WishContent() {
   const theme = getThemeStyles();
 
   if (loading) {
+    const queryLang = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('lang') : 'en';
+    const currentLang = queryLang === 'si' ? 'si' : 'en';
+    const loadingText = TRANSLATIONS[currentLang].loading;
     return (
       <div className="min-h-screen bg-[#0f0f11] flex flex-col items-center justify-center text-white">
         <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-sm opacity-60 tracking-wider">Unpacking birthday wishes...</p>
+        <p className="text-sm opacity-60 tracking-wider">{loadingText}</p>
       </div>
     );
   }
 
   if (error) {
+    const queryLang = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('lang') : 'en';
+    const currentLang = queryLang === 'si' ? 'si' : 'en';
+    let displayError = error;
+    if (currentLang === 'si') {
+      if (error.includes('could not be found')) {
+        displayError = 'මෙම උපන් දින සුභපැතුම් පත සොයාගත නොහැකි විය. එය මකා දමා තිබිය හැක හෝ සබැඳිය වැරදි විය හැක.';
+      } else if (error.includes('invalid configuration data')) {
+        displayError = 'සබැඳියෙහි දෝෂ සහිත දත්ත අඩංගු වේ.';
+      } else {
+        displayError = 'කාඩ්පත පූරණය කිරීමේදී දෝෂයක් සිදු විය.';
+      }
+    }
     return (
       <main className="relative min-h-screen flex flex-col items-center justify-center bg-[#0a0a0c] text-white p-6">
         <div className="w-full max-w-md bg-[#111115] border border-white/[0.05] p-8 rounded-2xl backdrop-blur-md shadow-xl text-center">
           <span className="text-4xl mb-4 block">⚠️</span>
-          <h1 className="text-xl font-bold mb-3 font-sans text-neutral-200">Unable to Load Card</h1>
-          <p className="text-sm text-neutral-400 mb-6 leading-relaxed">{error}</p>
+          <h1 className="text-xl font-bold mb-3 font-sans text-neutral-200">{TRANSLATIONS[currentLang].unableToLoad}</h1>
+          <p className="text-sm text-neutral-400 mb-6 leading-relaxed">{displayError}</p>
           <Link
             href="/"
             className="px-6 py-2.5 bg-amber-500 text-neutral-900 text-xs font-bold rounded-full hover:bg-amber-600 transition-all select-none"
           >
-            Create Your Own Card
+            {TRANSLATIONS[currentLang].createYourOwn}
           </Link>
         </div>
       </main>
@@ -338,6 +410,22 @@ function WishContent() {
     <main className={`relative min-h-screen flex flex-col items-center justify-center overflow-x-hidden p-6 transition-colors duration-1000 ${theme.bgClass} ${theme.fontClass}`}>
       {/* Dynamic Background Effect */}
       {theme.bgEffect}
+
+      {/* Floating Language Switcher Button */}
+      <div className="absolute top-4 right-4 z-40">
+        <button
+          onClick={toggleLanguage}
+          className={`px-3 py-1.5 rounded-full border transition-all cursor-pointer select-none text-[11px] font-bold shadow-md backdrop-blur-md hover:-translate-y-0.5 active:translate-y-0 ${
+            config.theme === 'pink'
+              ? 'bg-white/70 border-pink-200 text-pink-600 hover:bg-pink-50'
+              : config.theme === 'gold'
+              ? 'bg-neutral-900/60 border-amber-500/20 text-amber-400 hover:bg-neutral-800/80'
+              : 'bg-black/40 border-white/10 text-white hover:bg-black/60'
+          }`}
+        >
+          {lang === 'en' ? '🇱🇰 සිංහල' : '🇬🇧 EN'}
+        </button>
+      </div>
 
       {/* Floating balloons background */}
       <BalloonPop active={balloonsActive} />
@@ -359,7 +447,7 @@ function WishContent() {
         {phase === 'box' && (
           <div className="text-center animate-fade-in">
             <h1 className={`text-4xl md:text-5xl mb-6 font-bold leading-tight ${theme.headerFont}`}>
-              Hello, {config.name}!
+              {t('hello')}{config.name}!
             </h1>
             <GiftBox onOpen={handleOpenBox} theme={config.theme} />
           </div>
@@ -368,10 +456,10 @@ function WishContent() {
         {phase === 'cake' && (
           <div className="w-full text-center flex flex-col items-center">
             <h2 className={`text-3xl md:text-4xl font-bold mb-2 ${theme.headerFont}`}>
-              Happy Birthday, {config.name}!
+              {t('happyBirthdayTo')}{config.name}!
             </h2>
             <p className="text-sm opacity-80 max-w-xs mb-8">
-              A little sweet gesture for you! Make a wish and blow out the candles.
+              {t('gestureDesc')}
             </p>
             
             <CakeCandles 
@@ -403,11 +491,11 @@ function WishContent() {
               </div>
 
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 tracking-wide ${theme.textColor} ${theme.headerFont}`}>
-                Happy Birthday!
+                {t('happyBirthday')}
               </h1>
               
               <h2 className="text-xl md:text-2xl font-bold text-neutral-800 dark:text-white mb-6">
-                {config.name} {config.age ? `• Age ${config.age}` : ''}
+                {config.name} {config.age ? `• ${t('age')} ${config.age}` : ''}
               </h2>
 
               {/* Dynamic Polaroid Deck Gallery */}
@@ -452,7 +540,7 @@ function WishContent() {
                           </div>
                           {images.length > 1 && offset === 0 && (
                             <div className="text-[9px] text-center font-sans text-neutral-400 mt-2.5 font-semibold tracking-wide">
-                              📷 Click photo to slide ({idx + 1}/{images.length})
+                              📷 {t('clickPhoto')} ({idx + 1}/{images.length})
                             </div>
                           )}
                         </div>
@@ -493,14 +581,14 @@ function WishContent() {
                   }}
                   className="px-5 py-2.5 bg-neutral-800 dark:bg-white text-white dark:text-neutral-900 text-xs font-semibold rounded-full hover:scale-105 active:scale-95 transition-all shadow-md select-none cursor-pointer"
                 >
-                  🕯️ Blow Candles Again
+                  🕯️ {t('blowAgain')}
                 </button>
                 <Link
                   href="/"
                   className="px-5 py-2.5 bg-amber-500 text-white text-xs font-semibold rounded-full hover:bg-amber-600 hover:scale-105 active:scale-95 transition-all shadow-md select-none cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <span>✨</span>
-                  <span>Create Your Own Card</span>
+                  <span>{t('createYourOwn')}</span>
                 </Link>
               </div>
 
@@ -513,14 +601,32 @@ function WishContent() {
   );
 }
 
+function WishFallback() {
+  const [loadingText, setLoadingText] = useState("Unpacking birthday wishes...");
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const queryLang = params.get('lang') || localStorage.getItem('studio-lang') || 'en';
+      if (queryLang === 'si') {
+        setTimeout(() => {
+          setLoadingText("උපන් දින සුභපැතුම් සකසමින් පවතී...");
+        }, 0);
+      }
+    }
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-[#0f0f11] flex flex-col items-center justify-center text-white font-sans">
+      <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-4" />
+      <p className="text-sm opacity-60 tracking-wider">{loadingText}</p>
+    </div>
+  );
+}
+
 export default function WishPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-[#0f0f11] flex flex-col items-center justify-center text-white">
-        <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-sm opacity-60 tracking-wider">Unpacking birthday wishes...</p>
-      </div>
-    }>
+    <Suspense fallback={<WishFallback />}>
       <WishContent />
     </Suspense>
   );
