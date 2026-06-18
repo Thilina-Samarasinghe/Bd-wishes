@@ -57,12 +57,17 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(bytes);
 
     // 4. Upload to Cloudinary using a Promise wrapper
-    const result = await new Promise<any>((resolve, reject) => {
+    const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         { folder: 'bd-wishes-cards' },
-        (error: any, uploadedResult: any) => {
-          if (error) reject(error);
-          else resolve(uploadedResult);
+        (error: unknown, uploadedResult: unknown) => {
+          if (error) {
+            reject(error);
+          } else if (uploadedResult && typeof uploadedResult === 'object' && 'secure_url' in uploadedResult) {
+            resolve(uploadedResult as { secure_url: string });
+          } else {
+            reject(new Error('Unknown upload error'));
+          }
         }
       ).end(buffer);
     });
@@ -72,8 +77,9 @@ export async function POST(request: Request) {
       success: true,
       url: result.secure_url
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('File upload api error:', error);
-    return NextResponse.json({ error: error.message || 'Failed to upload image to Cloudinary.' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Failed to upload image to Cloudinary.';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

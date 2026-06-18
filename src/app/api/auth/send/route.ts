@@ -82,9 +82,9 @@ export async function POST(request: Request) {
           `,
         });
         emailSent = true;
-      } catch (err: any) {
+      } catch (err) {
         console.error('SMTP sending error:', err);
-        emailError = err.message || 'SMTP sending failed';
+        emailError = err instanceof Error ? err.message : 'SMTP sending failed';
       }
     }
 

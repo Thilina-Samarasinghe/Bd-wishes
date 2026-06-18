@@ -195,7 +195,7 @@ function extractPublicId(url: string): string | null {
     const lastDotIdx = remaining.lastIndexOf('.');
     if (lastDotIdx === -1) return remaining;
     return remaining.substring(0, lastDotIdx); // remove format extension like .jpg
-  } catch (e) {
+  } catch {
     return null;
   }
 }

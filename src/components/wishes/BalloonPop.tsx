@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 
 interface Balloon {
   id: number;
@@ -138,7 +138,7 @@ export default function BalloonPop({ active }: { active: boolean }) {
   };
 
   // Create popping particles helper
-  const createPopParticles = (x: number, y: number, color: string) => {
+  const createPopParticles = useCallback((x: number, y: number, color: string) => {
     const count = 14;
     const newParticles: Particle[] = [];
     for (let i = 0; i < count; i++) {
@@ -156,7 +156,7 @@ export default function BalloonPop({ active }: { active: boolean }) {
     }
     particlesRef.current.push(...newParticles);
     startParticleLoop();
-  };
+  }, []);
 
   // Handle pop action
   const handlePop = (balloon: Balloon, e: React.MouseEvent<HTMLDivElement>) => {
@@ -208,7 +208,7 @@ export default function BalloonPop({ active }: { active: boolean }) {
   // Handle Spawning
   useEffect(() => {
     if (!active) {
-      setBalloons([]);
+      setTimeout(() => setBalloons([]), 0);
       return;
     }
 

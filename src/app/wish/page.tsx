@@ -42,9 +42,10 @@ function WishContent() {
   useEffect(() => {
     const cardParam = searchParams.get('card');
     const idParam = searchParams.get('id');
+    let timer: NodeJS.Timeout;
 
     if (idParam) {
-      setLoading(true);
+      setTimeout(() => setLoading(true), 0);
       fetch(`/api/card?id=${idParam}`)
         .then(res => res.json())
         .then(data => {
@@ -54,42 +55,52 @@ function WishContent() {
               name: card.name,
               age: card.age?.toString() || '',
               wishes: card.wishes,
-              theme: card.theme as any,
-              music: card.music as any,
-              effects: card.effects as any,
+              theme: card.theme as CardConfig['theme'],
+              music: card.music as CardConfig['music'],
+              effects: card.effects as CardConfig['effects'],
               imageUrl: card.images[0] || '', // fallback
               images: card.images,
             };
-            const timer = setTimeout(() => {
+            timer = setTimeout(() => {
               setConfig(mappedConfig);
               setLoading(false);
             }, 0);
-            return () => clearTimeout(timer);
           } else {
-            setError(data.error || 'This birthday card could not be found. It may have been deleted or the link is invalid.');
-            setLoading(false);
+            timer = setTimeout(() => {
+              setError(data.error || 'This birthday card could not be found. It may have been deleted or the link is invalid.');
+              setLoading(false);
+            }, 0);
           }
         })
         .catch(() => {
-          setError('An error occurred while loading this birthday card.');
-          setLoading(false);
+          timer = setTimeout(() => {
+            setError('An error occurred while loading this birthday card.');
+            setLoading(false);
+          }, 0);
         });
     } else if (cardParam) {
       const decoded = decodeConfig(cardParam);
       if (decoded) {
-        const timer = setTimeout(() => {
+        timer = setTimeout(() => {
           setConfig(decoded);
           setLoading(false);
         }, 0);
-        return () => clearTimeout(timer);
       } else {
-        setError('The link contains invalid configuration data.');
-        setLoading(false);
+        timer = setTimeout(() => {
+          setError('The link contains invalid configuration data.');
+          setLoading(false);
+        }, 0);
       }
     } else {
       // Load default config
-      setLoading(false);
+      timer = setTimeout(() => {
+        setLoading(false);
+      }, 0);
     }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, [searchParams]);
 
   const handleOpenBox = () => {

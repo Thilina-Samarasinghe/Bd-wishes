@@ -8,6 +8,18 @@ import BalloonPop from '@/components/wishes/BalloonPop';
 import ConfettiEffect from '@/components/wishes/ConfettiEffect';
 import AudioPlayer from '@/components/wishes/AudioPlayer';
 
+interface SavedWishCard {
+  id: string;
+  name: string;
+  age?: number | null;
+  wishes: string;
+  theme: 'gold' | 'pink' | 'neon' | 'space' | 'sunset' | 'forest' | 'violet' | 'ocean';
+  music: 'music-box' | 'lofi' | 'piano' | 'none';
+  effects: ('balloons' | 'candles' | 'confetti')[];
+  images: string[];
+  createdAt: string;
+}
+
 const PRESETS = [
   {
     label: "✨ Midnight Gold (Classic)",
@@ -51,7 +63,7 @@ export default function CustomizerPage() {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
   const [magicLinkUrl, setMagicLinkUrl] = useState<string | null>(null);
-  const [historyCards, setHistoryCards] = useState<any[]>([]);
+  const [historyCards, setHistoryCards] = useState<SavedWishCard[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
   // Uploads States
@@ -95,7 +107,9 @@ export default function CustomizerPage() {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('studio-theme');
       if (saved === 'light') {
-        setIsLightTheme(true);
+        setTimeout(() => {
+          setIsLightTheme(true);
+        }, 0);
       }
     }
 
@@ -106,6 +120,7 @@ export default function CustomizerPage() {
       clearTimeout(timer);
       document.head.removeChild(link);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Auto-dismiss notification effect
@@ -118,16 +133,9 @@ export default function CustomizerPage() {
     }
   }, [notification]);
 
-  // Sync uploaded images with config imageUrl for mockup preview (fallback to first uploaded)
-  useEffect(() => {
-    if (uploadedImages.length > 0) {
-      setConfig(prev => ({ ...prev, imageUrl: uploadedImages[0] }));
-    } else {
-      setConfig(prev => ({ ...prev, imageUrl: '' }));
-    }
-  }, [uploadedImages]);
 
-  const checkUserSession = async () => {
+
+  async function checkUserSession() {
     setAuthLoading(true);
     try {
       const res = await fetch('/api/auth/me');
@@ -143,9 +151,9 @@ export default function CustomizerPage() {
     } finally {
       setAuthLoading(false);
     }
-  };
+  }
 
-  const fetchUserHistory = async () => {
+  async function fetchUserHistory() {
     setHistoryLoading(true);
     try {
       const res = await fetch('/api/card');
@@ -158,7 +166,7 @@ export default function CustomizerPage() {
     } finally {
       setHistoryLoading(false);
     }
-  };
+  }
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -196,6 +204,7 @@ export default function CustomizerPage() {
       setUser(null);
       setHistoryCards([]);
       setUploadedImages([]);
+      setConfig(prev => ({ ...prev, imageUrl: '' }));
       setDbShareLink(null);
       setActivePreviewTab('box');
     } catch (err) {
@@ -229,7 +238,11 @@ export default function CustomizerPage() {
 
         const data = await res.json();
         if (res.ok && data.success) {
-          setUploadedImages(prev => [...prev, data.url]);
+          setUploadedImages(prev => {
+            const next = [...prev, data.url];
+            setConfig(c => ({ ...c, imageUrl: next[0] || '' }));
+            return next;
+          });
         } else {
           setUploadError(data.error || 'Failed to upload image.');
           break;
@@ -245,7 +258,11 @@ export default function CustomizerPage() {
   };
 
   const removeUploadedImage = (index: number) => {
-    setUploadedImages(prev => prev.filter((_, idx) => idx !== index));
+    setUploadedImages(prev => {
+      const next = prev.filter((_, idx) => idx !== index);
+      setConfig(c => ({ ...c, imageUrl: next[0] || '' }));
+      return next;
+    });
     setDbShareLink(null);
   };
 
@@ -1064,7 +1081,7 @@ export default function CustomizerPage() {
                   </div>
                 ) : historyCards.length === 0 ? (
                   <p className="text-xs text-slate-500 italic py-2">
-                    No cards created yet. Fill out the configurator and click "Save Card" to start your collection!
+                    No cards created yet. Fill out the configurator and click &quot;Save Card&quot; to start your collection!
                   </p>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 max-h-[260px] overflow-y-auto pr-1 scrollbar-thin">
