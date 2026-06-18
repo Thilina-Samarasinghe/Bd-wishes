@@ -509,29 +509,29 @@ export default function CustomizerPage() {
       }`} />
 
       {/* Header Bar */}
-      <header className={`border-b backdrop-blur-xl px-8 py-5 flex items-center justify-between sticky top-0 z-40 shadow-sm transition-colors duration-300 ${
+      <header className={`border-b backdrop-blur-xl px-4 md:px-8 py-3.5 md:py-5 flex items-center justify-between sticky top-0 z-40 shadow-sm transition-colors duration-300 ${
         isLightTheme ? 'border-slate-200/80 bg-white/70 text-slate-850' : 'border-white/[0.05] bg-slate-950/60 text-slate-100'
       }`}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-tr from-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/25 text-xl select-none animate-[pulse_3s_infinite]">
+        <div className="flex items-center gap-2 md:gap-3">
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-tr from-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/25 text-lg md:text-xl select-none animate-[pulse_3s_infinite] shrink-0">
             🎂
           </div>
           <div>
-            <h1 className={`text-sm md:text-base font-extrabold tracking-wide bg-clip-text text-transparent transition-all duration-300 ${
+            <h1 className={`text-xs md:text-base font-extrabold tracking-wide bg-clip-text text-transparent transition-all duration-300 ${
               isLightTheme 
                 ? 'bg-gradient-to-r from-slate-900 via-slate-800 to-slate-600' 
                 : 'bg-gradient-to-r from-white via-slate-100 to-slate-400'
-            }`}>Creative BD Wishes Studio</h1>
-            <p className={`text-[10px] md:text-xs font-medium transition-colors duration-300 ${
+            }`}>BD Wishes Studio</h1>
+            <p className={`hidden md:block text-[10px] md:text-xs font-medium transition-colors duration-300 ${
               isLightTheme ? 'text-slate-500' : 'text-slate-400'
             }`}>Design & Share Magical Interactive Birthday Greetings</p>
           </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1.5 md:gap-4">
           {/* Light/Dark mode Toggle Button */}
           <button
             onClick={toggleTheme}
-            className={`p-2 rounded-xl border transition-all cursor-pointer select-none text-base shadow-sm flex items-center justify-center hover:-translate-y-0.5 active:translate-y-0 ${
+            className={`p-1.5 rounded-xl border transition-all cursor-pointer select-none text-xs sm:text-sm md:text-base shadow-sm flex items-center justify-center hover:-translate-y-0.5 active:translate-y-0 ${
               isLightTheme 
                 ? 'bg-white border-slate-200 text-amber-500 hover:bg-slate-50 shadow-slate-100' 
                 : 'bg-slate-900 border-white/[0.08] text-amber-400 hover:bg-slate-850'
@@ -545,7 +545,7 @@ export default function CustomizerPage() {
           {user && (
             <button
               onClick={() => setShowPreview(prev => !prev)}
-              className={`text-xs font-bold px-3.5 py-1.5 rounded-xl transition-all shadow-md flex items-center gap-1.5 cursor-pointer select-none hover:-translate-y-0.5 active:translate-y-0 ${
+              className={`text-[10px] sm:text-xs font-bold px-2 py-1.5 sm:px-3 sm:py-1.5 rounded-xl transition-all shadow-md flex items-center gap-1 cursor-pointer select-none hover:-translate-y-0.5 active:translate-y-0 ${
                 showPreview
                   ? isLightTheme
                     ? 'bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700'
@@ -553,12 +553,13 @@ export default function CustomizerPage() {
                   : 'bg-amber-500 text-neutral-950 hover:bg-amber-600 shadow-amber-500/10'
               }`}
             >
-              {showPreview ? '👁️ Hide Preview' : '👁️ Show Preview'}
+              <span>👁️</span>
+              <span className="hidden sm:inline-block ml-0.5">{showPreview ? 'Hide Preview' : 'Show Preview'}</span>
             </button>
           )}
           {user ? (
-            <div className="flex items-center gap-3">
-              <span className={`text-[11px] font-bold px-3.5 py-1.5 rounded-full shadow-inner border transition-all duration-300 ${
+            <div className="flex items-center gap-1.5 sm:gap-3">
+              <span className={`hidden md:inline-block text-[11px] font-bold px-3.5 py-1.5 rounded-full shadow-inner border transition-all duration-300 ${
                 isLightTheme 
                   ? 'text-slate-750 bg-white border-slate-200/80 shadow-slate-100' 
                   : 'text-slate-300 bg-slate-950/60 border-white/[0.05]'
@@ -567,17 +568,18 @@ export default function CustomizerPage() {
               </span>
               <button
                 onClick={handleLogout}
-                className={`text-xs font-bold px-3.5 py-1.5 rounded-xl border transition-all select-none cursor-pointer hover:-translate-y-0.5 active:translate-y-0 ${
+                className={`text-[10px] sm:text-xs font-bold px-2 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border transition-all select-none cursor-pointer hover:-translate-y-0.5 active:translate-y-0 ${
                   isLightTheme
                     ? 'text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-rose-200'
                     : 'text-rose-400 hover:text-rose-350 hover:bg-rose-950/25 border-rose-500/20'
                 }`}
               >
-                Sign Out
+                <span className="hidden sm:inline-block">Sign Out</span>
+                <span className="inline-block sm:hidden">🚪</span>
               </button>
             </div>
           ) : (
-            <span className={`text-xs font-bold select-none uppercase tracking-wider px-3 py-1 border rounded-full transition-all duration-300 ${
+            <span className={`text-[10px] sm:text-xs font-bold select-none uppercase tracking-wider px-2 py-1 border rounded-full transition-all duration-300 ${
               isLightTheme 
                 ? 'text-slate-500 bg-slate-200/40 border-slate-250' 
                 : 'text-slate-500 bg-slate-950/40 border-white/[0.03]'
@@ -592,7 +594,7 @@ export default function CustomizerPage() {
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
         
         {/* Left pane: Customizer / Login Panel (scrollable) */}
-        <div className={`${showPreview ? 'lg:col-span-7' : 'lg:col-span-12'} p-6 md:p-8 overflow-y-auto max-h-[calc(100vh-81px)] transition-all duration-300 border-r space-y-8 scrollbar-thin ${
+        <div className={`${showPreview ? 'hidden lg:block lg:col-span-7' : 'col-span-12 lg:col-span-12'} p-6 md:p-8 overflow-y-auto max-h-[calc(100vh-81px)] transition-all duration-300 border-r space-y-8 scrollbar-thin ${
           isLightTheme ? 'border-slate-200/80 shadow-inner bg-slate-50/50' : 'border-white/[0.05]'
         }`}>
           
@@ -1174,7 +1176,7 @@ export default function CustomizerPage() {
 
         {/* Right pane: Real-time Live Preview container */}
         {showPreview && (
-          <div className={`lg:col-span-5 p-6 md:p-8 flex flex-col items-center justify-center relative min-h-[500px] transition-colors duration-300 ${
+          <div className={`col-span-12 lg:col-span-5 p-6 md:p-8 flex flex-col items-center justify-center relative min-h-[500px] transition-colors duration-300 ${
             isLightTheme ? 'bg-slate-100/70 border-l border-slate-200/50' : 'bg-slate-950'
           }`}>
             

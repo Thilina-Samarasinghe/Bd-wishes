@@ -383,7 +383,7 @@ function WishContent() {
 
         {phase === 'letter' && (
           <div 
-            className={`w-full border p-8 md:p-10 rounded-2xl transition-all duration-1000 ease-out translate-y-0 opacity-100 backdrop-blur-md ${theme.glassClass} ${theme.accentBorder}`}
+            className={`w-full border p-5 sm:p-8 md:p-10 rounded-2xl transition-all duration-1000 ease-out translate-y-0 opacity-100 backdrop-blur-md ${theme.glassClass} ${theme.accentBorder}`}
             style={{
               animation: 'slideUpOpen 1s ease-out forwards',
             }}
