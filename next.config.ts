@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // ws must load through native require: bundling it breaks its optional native helpers.
+  serverExternalPackages: ["ws"],
 };
 
 export default nextConfig;

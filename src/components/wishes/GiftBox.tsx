@@ -1,13 +1,18 @@
 'use client';
 
 import React, { useState } from 'react';
+import { getTheme, type CardMode, type ThemeId } from '@/lib/themes';
+import { CARD_TEXT, type CardLang } from '@/lib/cardText';
 
 interface GiftBoxProps {
   onOpen: () => void;
-  theme: 'gold' | 'pink' | 'neon' | 'space' | 'sunset' | 'forest' | 'violet' | 'ocean';
+  theme: ThemeId;
+  mode?: CardMode;
+  lang?: CardLang;
+  showSongHint?: boolean;
 }
 
-export default function GiftBox({ onOpen, theme }: GiftBoxProps) {
+export default function GiftBox({ onOpen, theme, mode, lang = 'en', showSongHint = false }: GiftBoxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -42,93 +47,8 @@ export default function GiftBox({ onOpen, theme }: GiftBoxProps) {
     }, 800);
   };
 
-  // Theme-specific colors for the gift box
-  const getBoxColors = () => {
-    switch (theme) {
-      case 'gold':
-        return {
-          boxBg: 'bg-gradient-to-tr from-neutral-900 via-neutral-800 to-neutral-700',
-          lidBg: 'bg-neutral-800 border-b border-amber-500/20',
-          ribbonBg: 'bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-600',
-          bowBg: 'bg-amber-500',
-          shadow: 'shadow-amber-500/10',
-          textColor: 'text-amber-400 font-serif',
-          glow: 'bg-amber-400/20',
-        };
-      case 'pink':
-        return {
-          boxBg: 'bg-gradient-to-tr from-rose-500 via-pink-400 to-pink-300',
-          lidBg: 'bg-pink-400 border-b border-rose-300/30',
-          ribbonBg: 'bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500',
-          bowBg: 'bg-yellow-400',
-          shadow: 'shadow-pink-500/20',
-          textColor: 'text-pink-100 font-sans',
-          glow: 'bg-pink-300/30',
-        };
-      case 'neon':
-        return {
-          boxBg: 'bg-gradient-to-tr from-violet-950 via-purple-900 to-fuchsia-950 border border-fuchsia-500/50',
-          lidBg: 'bg-purple-900 border-b border-cyan-400/50',
-          ribbonBg: 'bg-gradient-to-r from-cyan-400 via-fuchsia-500 to-cyan-400 animate-pulse',
-          bowBg: 'bg-cyan-400',
-          shadow: 'shadow-fuchsia-500/30 shadow-[0_0_20px_rgba(247,37,133,0.3)]',
-          textColor: 'text-cyan-400 font-mono tracking-wider',
-          glow: 'bg-fuchsia-500/20',
-        };
-      case 'space':
-        return {
-          boxBg: 'bg-gradient-to-tr from-slate-950 via-indigo-950 to-blue-950 border border-blue-500/30',
-          lidBg: 'bg-indigo-950 border-b border-purple-500/30',
-          ribbonBg: 'bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500',
-          bowBg: 'bg-purple-500',
-          shadow: 'shadow-blue-500/20',
-          textColor: 'text-blue-300 font-sans tracking-wide',
-          glow: 'bg-purple-500/15',
-        };
-      case 'sunset':
-        return {
-          boxBg: 'bg-gradient-to-tr from-amber-950 via-orange-800 to-orange-600',
-          lidBg: 'bg-orange-850 border-b border-orange-500/20',
-          ribbonBg: 'bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-500',
-          bowBg: 'bg-amber-400',
-          shadow: 'shadow-orange-500/20',
-          textColor: 'text-orange-400 font-sans tracking-wide',
-          glow: 'bg-orange-400/20',
-        };
-      case 'forest':
-        return {
-          boxBg: 'bg-gradient-to-tr from-emerald-950 via-emerald-800 to-green-700',
-          lidBg: 'bg-emerald-850 border-b border-emerald-500/20',
-          ribbonBg: 'bg-gradient-to-r from-yellow-100 via-emerald-300 to-green-500',
-          bowBg: 'bg-emerald-400',
-          shadow: 'shadow-emerald-500/20',
-          textColor: 'text-emerald-400 font-sans tracking-wide',
-          glow: 'bg-emerald-400/20',
-        };
-      case 'violet':
-        return {
-          boxBg: 'bg-gradient-to-tr from-violet-950 via-purple-900 to-fuchsia-850',
-          lidBg: 'bg-purple-900 border-b border-fuchsia-500/20',
-          ribbonBg: 'bg-gradient-to-r from-purple-400 via-fuchsia-400 to-purple-500',
-          bowBg: 'bg-fuchsia-400',
-          shadow: 'shadow-purple-500/25',
-          textColor: 'text-purple-400 font-sans tracking-wider',
-          glow: 'bg-purple-400/20',
-        };
-      case 'ocean':
-        return {
-          boxBg: 'bg-gradient-to-tr from-blue-950 via-sky-800 to-sky-600',
-          lidBg: 'bg-sky-850 border-b border-sky-550/20',
-          ribbonBg: 'bg-gradient-to-r from-cyan-400 via-blue-450 to-sky-400',
-          bowBg: 'bg-sky-400',
-          shadow: 'shadow-sky-500/20',
-          textColor: 'text-sky-350 font-sans tracking-wide',
-          glow: 'bg-sky-400/20',
-        };
-    }
-  };
-
-  const colors = getBoxColors();
+  const colors = getTheme(theme, mode).box;
+  const text = CARD_TEXT[lang];
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[350px]">
@@ -198,11 +118,14 @@ export default function GiftBox({ onOpen, theme }: GiftBoxProps) {
 
       <div className={`text-center transition-all duration-300 ${isOpen ? 'opacity-0' : 'opacity-100'}`}>
         <p className={`text-lg font-medium animate-pulse ${colors.textColor}`}>
-          🎁 You have a special gift!
+          🎁 {text.specialGift}
         </p>
-        <p className="text-xs text-neutral-400 mt-1.5 font-sans">
-          Click the box to open
+        <p className="text-xs opacity-70 mt-1.5 font-sans">
+          {text.tapToOpen}
         </p>
+        {showSongHint && (
+          <p className="text-xs opacity-70 mt-1 font-sans">🎵 {text.tapForSong}</p>
+        )}
       </div>
     </div>
   );

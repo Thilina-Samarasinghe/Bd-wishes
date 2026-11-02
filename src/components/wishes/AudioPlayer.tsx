@@ -1,15 +1,17 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { BirthdaySynth } from '@/utils/audioSynth';
+import { BirthdaySynth, preloadTrack, suspendAudio, unlockAudio } from '@/utils/audioSynth';
+import { CARD_TEXT, MUSIC_LABELS, type CardLang, type MusicTrack } from '@/lib/cardText';
 
 interface AudioPlayerProps {
-  track: 'music-box' | 'lofi' | 'piano' | 'none';
+  track: MusicTrack;
+  lang?: CardLang;
   isPlaying: boolean;
   onTogglePlay: (playing: boolean) => void;
 }
 
-export default function AudioPlayer({ track, isPlaying, onTogglePlay }: AudioPlayerProps) {
+export default function AudioPlayer({ track, lang = 'en', isPlaying, onTogglePlay }: AudioPlayerProps) {
   const synthRef = useRef<BirthdaySynth | null>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -30,6 +32,7 @@ export default function AudioPlayer({ track, isPlaying, onTogglePlay }: AudioPla
 
   // Update track theme when it changes
   useEffect(() => {
+    preloadTrack(track);
     if (synthRef.current) {
       synthRef.current.setTheme(track);
     }
@@ -46,7 +49,24 @@ export default function AudioPlayer({ track, isPlaying, onTogglePlay }: AudioPla
     }
   }, [isPlaying, track, mounted]);
 
+  // Stop when the visitor leaves the tab or app, and start again when they come back
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      if (!synthRef.current || !isPlaying) return;
+      if (document.hidden) {
+        synthRef.current.stop();
+        suspendAudio();
+      } else {
+        unlockAudio();
+        synthRef.current.play();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', onVisibilityChange);
+  }, [isPlaying]);
+
   const handleToggle = () => {
+    unlockAudio();
     const nextPlaying = !isPlaying;
     onTogglePlay(nextPlaying);
   };
@@ -54,7 +74,7 @@ export default function AudioPlayer({ track, isPlaying, onTogglePlay }: AudioPla
   if (!mounted || track === 'none') return null;
 
   return (
-    <div className="fixed top-4 right-4 z-40 flex items-center gap-3 bg-white/10 dark:bg-black/20 backdrop-blur-md px-3.5 py-2 rounded-full border border-white/20 dark:border-white/5 shadow-lg">
+    <div className="fixed top-3 right-3 z-40 flex items-center gap-2.5 bg-black/60 text-white backdrop-blur-md pl-3.5 pr-1.5 py-1.5 rounded-full border border-white/20 shadow-lg">
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes soundWave {
           0%, 100% { height: 4px; }
@@ -74,14 +94,14 @@ export default function AudioPlayer({ track, isPlaying, onTogglePlay }: AudioPla
         <div className={`w-[3px] bg-amber-400 rounded-full ${isPlaying ? 'bar-4' : 'h-[5px]'}`} />
       </div>
 
-      <span className="text-[11px] font-medium tracking-wide uppercase opacity-75 text-neutral-800 dark:text-neutral-200 select-none">
-        {track.replace('-', ' ')}
+      <span className="text-[11px] font-medium tracking-wide opacity-90 select-none">
+        {MUSIC_LABELS[track][lang]}
       </span>
 
       <button
         onClick={handleToggle}
-        className="w-7 h-7 flex items-center justify-center rounded-full bg-amber-500 hover:bg-amber-600 active:scale-90 transition-all text-white text-xs cursor-pointer"
-        aria-label={isPlaying ? 'Mute Music' : 'Play Music'}
+        className="w-9 h-9 flex items-center justify-center rounded-full bg-amber-500 hover:bg-amber-600 active:scale-90 transition-all text-white text-xs cursor-pointer"
+        aria-label={isPlaying ? CARD_TEXT[lang].muteMusic : CARD_TEXT[lang].playMusic}
       >
         {isPlaying ? (
           /* Volume speaker icon */
