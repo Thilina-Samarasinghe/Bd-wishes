@@ -1,0 +1,7 @@
+Violin recordings: VSCO 2: Community Edition by Versilian Studios
+https://github.com/sgossner/VSCO-2-CE
+License: CC0 1.0 Universal
+
+Files here were trimmed, level-matched, and converted to MP3 from the
+"Solo Violin/Arco Vib" and "Violin Section/susVib" folders.
+Versilian Studios asks that the samples are not sold directly.

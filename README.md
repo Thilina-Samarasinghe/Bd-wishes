@@ -20,13 +20,25 @@ Traditionally, greeting cards are physical, easily lost, and static. Birthday Wi
 ## 🚀 Key Features
 
 - **Dynamic Theme Customizer**: Real-time interactive phone-device mockup preview so you can see exactly what the greeting page will look like.
+- **14 Card Themes**: Includes designs with their own card shapes, such as *Golden Ticket*, *Memory Scrapbook*, and *Pixel Arcade*. To add a theme, add one entry to `src/lib/themes.tsx`.
+- **Guest Mode**: Create and share a card by link without an account. Sign in to save cards, add photos, and view your history.
 - **Dual Mode Landing Page**: A fully responsive dashboard supporting smooth transitions between Premium Dark and Light modes.
-- **Bilingual Interface**: Dynamic toggle button (`🇱🇰 සිංහල` / `🇬🇧 EN`) to translate instructions, configurators, forms, previews, and wishes on-the-fly.
+- **Bilingual Interface**: The toggle button (`🇱🇰 සිංහල` / `🇬🇧 EN`) at the top translates the website for the person using it.
+- **Per-Card Language and Appearance**: Each card is sent in English or Sinhala and in dark or light, chosen by the sender and saved with the card. The website's own language and dark mode buttons do not affect the card.
+- **Sound Preview and Birthday Song**: Tapping a sound plays it while choosing. The recipient hears the selected song from their first tap on the card, which browsers require before any sound can play.
+- **Preview Before Sharing**: A full-screen preview shows the real card, and the app suggests it before a card is saved or its link is copied.
+- **Mobile First**: The studio and cards are built for phone screens.
 - **Soundtrack Integration**: Option to toggle background music tracks (`Piano`, `Music Box`, `Lofi`, `None`).
 - **Interactive Wishes View Page**: The shared link decodes the configurations to show a dedicated interactive wishing card tailored to the recipient.
 - **Safe Database Architecture**: Powered by **Prisma 7** utilizing the `@prisma/adapter-pg` driver for reliable connection pooling and performance.
 - **Passwordless Magic-Link Auth**: Simple, secure login using `Nodemailer` to verify and manage your saved collection.
 - **Collection History**: Easily copy links or reopen your previously saved birthday wish cards.
+
+---
+
+## 🎻 Credits
+
+The Real Violin sound uses recordings from [VSCO 2: Community Edition](https://github.com/sgossner/VSCO-2-CE) by Versilian Studios (CC0).
 
 ---
 
@@ -56,7 +68,8 @@ NEXT_AUTH_SECRET="your_secret_key"
 SMTP_HOST="smtp.example.com"
 SMTP_PORT=587
 SMTP_USER="your-email@example.com"
-SMTP_PASS="your-email-password"
+SMTP_PASSWORD="your-email-password"
+SMTP_FROM="BD Wishes <your-email@example.com>"
 CLOUDINARY_CLOUD_NAME="your_cloudinary_cloud_name"
 CLOUDINARY_API_KEY="your_cloudinary_api_key"
 CLOUDINARY_API_SECRET="your_cloudinary_api_secret"
@@ -80,6 +93,8 @@ Start the development server:
 pnpm dev
 ```
 Open [http://localhost:3000](http://localhost:3000) in your browser to view the Birthday Wishes Studio.
+
+> **Local database connection:** Some networks block Postgres port 5432. In development, the app reaches Neon databases through a WebSocket on port 443 to avoid this. Production uses the direct `pg` connection. Prisma CLI commands such as `prisma db push` still use port 5432, so they may need a different network.
 
 ### 6. Building for Production
 To build the application for deployment (e.g. on Vercel):
