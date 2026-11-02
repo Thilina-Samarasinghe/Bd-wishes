@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { CARD_TEXT, type CardLang } from '@/lib/cardText';
 
 interface CakeCandlesProps {
   age?: number;
   onBlowOut: () => void;
+  lang?: CardLang;
 }
 
 // Play a soft wind/extinguish sound effect using Web Audio API
@@ -46,7 +48,7 @@ const playBlowSound = () => {
   }
 };
 
-export default function CakeCandles({ age = 3, onBlowOut }: CakeCandlesProps) {
+export default function CakeCandles({ age = 3, onBlowOut, lang = 'en' }: CakeCandlesProps) {
   // Determine number of candles (min 1, max 5 for visual spacing)
   const numCandles = Math.min(Math.max(age > 0 ? age : 3, 1), 5);
   
@@ -269,12 +271,12 @@ export default function CakeCandles({ age = 3, onBlowOut }: CakeCandlesProps) {
           className="mt-6 flex items-center justify-center gap-2 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-medium rounded-full shadow-lg transition-all duration-200 text-sm group"
         >
           <span>💨</span>
-          <span>Blow Out All Candles</span>
+          <span>{CARD_TEXT[lang].blowAll}</span>
         </button>
       ) : (
         <div className="mt-6 text-xl font-semibold text-amber-500 animate-pulse flex items-center gap-1.5">
           <span>🌟</span>
-          <span>Make a wish!</span>
+          <span>{CARD_TEXT[lang].makeAWish}</span>
         </div>
       )}
     </div>

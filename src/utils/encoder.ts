@@ -1,11 +1,18 @@
+import { isThemeId, type CardMode, type ThemeId } from '@/lib/themes';
+import { isMusicTrack, type CardLang, type MusicTrack } from '@/lib/cardText';
+
 export interface CardConfig {
   name: string;
   age?: string;
   wishes: string;
-  theme: 'gold' | 'pink' | 'neon' | 'space' | 'sunset' | 'forest' | 'violet' | 'ocean';
-  music: 'music-box' | 'lofi' | 'piano' | 'none';
+  theme: ThemeId;
+  music: MusicTrack;
   effects: ('balloons' | 'candles' | 'confetti')[];
   imageUrl?: string;
+  /** Language of the card itself. Older links do not have this. */
+  lang?: CardLang;
+  /** Dark or light look of the card itself. Older links keep the theme's native look. */
+  mode?: CardMode;
 }
 
 export const DEFAULT_CONFIG: CardConfig = {
@@ -16,6 +23,8 @@ export const DEFAULT_CONFIG: CardConfig = {
   music: "music-box",
   effects: ["balloons", "candles", "confetti"],
   imageUrl: "",
+  lang: "en",
+  mode: "dark",
 };
 
 // Encodes the card config to a Base64 string
@@ -48,8 +57,10 @@ export function decodeConfig(str: string): CardConfig | null {
     // Validate fields to ensure it adheres to CardConfig interface
     if (typeof parsed.name !== 'string') return null;
     if (typeof parsed.wishes !== 'string') return null;
-    if (!['gold', 'pink', 'neon', 'space', 'sunset', 'forest', 'violet', 'ocean'].includes(parsed.theme)) parsed.theme = 'gold';
-    if (!['music-box', 'lofi', 'piano', 'none'].includes(parsed.music)) parsed.music = 'none';
+    if (!isThemeId(parsed.theme)) parsed.theme = 'gold';
+    if (!isMusicTrack(parsed.music)) parsed.music = 'none';
+    if (parsed.lang !== 'en' && parsed.lang !== 'si') delete parsed.lang;
+    if (parsed.mode !== 'dark' && parsed.mode !== 'light') delete parsed.mode;
     if (!Array.isArray(parsed.effects)) parsed.effects = ['balloons', 'candles', 'confetti'];
     
     return parsed;

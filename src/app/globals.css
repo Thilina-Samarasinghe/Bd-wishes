@@ -24,3 +24,149 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ---- Card theme effects, used by src/lib/themes.tsx ---- */
+
+@keyframes theme-petal-fall {
+  0% { transform: translateY(-5%) rotate(0deg) translateX(0); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% { transform: translateY(105vh) rotate(360deg) translateX(30px); opacity: 0; }
+}
+
+.theme-petal {
+  position: absolute;
+  background-color: #ffb7c5;
+  border-radius: 150% 0 150% 150%;
+  animation: theme-petal-fall 8s infinite linear;
+  opacity: 0;
+}
+
+.theme-neon-grid {
+  opacity: 0.4;
+  background-size: 40px 40px;
+  background-image:
+    linear-gradient(to right, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+}
+
+@keyframes theme-ripple-wave {
+  0%, 100% { transform: scale(1); opacity: 0.15; }
+  50% { transform: scale(1.08); opacity: 0.25; }
+}
+
+.theme-ocean-glow {
+  animation: theme-ripple-wave 10s infinite ease-in-out;
+}
+
+@keyframes theme-bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -14px; }
+}
+
+.theme-bob {
+  animation: theme-bob 5s infinite ease-in-out;
+}
+
+/* Scrapbook: kraft paper grain and a ruled sheet */
+.theme-kraft {
+  background-image: radial-gradient(rgba(90, 60, 25, 0.16) 1px, transparent 1px);
+  background-size: 7px 7px;
+}
+
+.theme-lined-paper {
+  background-color: #fffdf6;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 31px,
+    rgba(70, 110, 170, 0.14) 31px,
+    rgba(70, 110, 170, 0.14) 32px
+  );
+}
+
+.theme-lined-paper-dark {
+  background-color: #3a2e24;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 31px,
+    rgba(244, 233, 216, 0.1) 31px,
+    rgba(244, 233, 216, 0.1) 32px
+  );
+}
+
+/* Golden Ticket: semicircles cut from both sides of the card */
+.theme-ticket {
+  background: linear-gradient(135deg, #f6d77a 0%, #fbe9c6 45%, #e9bf5a 100%);
+  border-radius: 10px;
+  -webkit-mask:
+    radial-gradient(circle 16px at 0 50%, transparent 98%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle 16px at 100% 50%, transparent 98%, #000) right / 51% 100% no-repeat;
+  mask:
+    radial-gradient(circle 16px at 0 50%, transparent 98%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle 16px at 100% 50%, transparent 98%, #000) right / 51% 100% no-repeat;
+}
+
+@keyframes theme-spotlight {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.theme-spotlight {
+  animation: theme-spotlight 6s infinite ease-in-out;
+}
+
+/* Pixel Arcade: stepped 8-bit border */
+.theme-pixel-card {
+  background-color: #15153f;
+  box-shadow:
+    0 -6px 0 0 #7df9ff,
+    0 6px 0 0 #7df9ff,
+    -6px 0 0 0 #7df9ff,
+    6px 0 0 0 #7df9ff,
+    0 14px 0 0 rgba(0, 0, 0, 0.35);
+}
+
+.theme-pixel-card-light {
+  background-color: #ffffff;
+  box-shadow:
+    0 -6px 0 0 #15153f,
+    0 6px 0 0 #15153f,
+    -6px 0 0 0 #15153f,
+    6px 0 0 0 #15153f,
+    0 14px 0 0 rgba(21, 21, 63, 0.25);
+}
+
+.theme-pixel-ground {
+  background: repeating-linear-gradient(90deg, #2bd96b 0 12px, #1da653 12px 24px);
+}
+
+@keyframes theme-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0.15; }
+}
+
+.theme-blink {
+  animation: theme-blink 1.6s infinite steps(1);
+}
+
+@keyframes theme-aurora-drift {
+  0%, 100% { transform: translateX(0) scale(1); opacity: 0.8; }
+  50% { transform: translateX(8%) scale(1.15); opacity: 1; }
+}
+
+.theme-aurora {
+  animation: theme-aurora-drift 12s infinite ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-petal,
+  .theme-ocean-glow,
+  .theme-bob,
+  .theme-spotlight,
+  .theme-blink,
+  .theme-aurora {
+    animation: none;
+  }
+}

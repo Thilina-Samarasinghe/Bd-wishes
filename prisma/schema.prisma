@@ -40,5 +40,7 @@ model BirthdayWish {
   music     String
   effects   String[]
   images    String[]
+  lang      String?
+  mode      String?
   createdAt DateTime @default(now())
 }

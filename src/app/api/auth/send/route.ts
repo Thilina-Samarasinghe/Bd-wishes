@@ -34,11 +34,13 @@ export async function POST(request: Request) {
     const origin = new URL(request.url).origin;
     const magicLink = `${origin}/api/auth/callback?token=${token}`;
 
-    // Log the link to the console for the developer
-    console.log('\n======================================');
-    console.log(`🔑 PASSWORDLESS MAGIC LINK FOR: ${email}`);
-    console.log(magicLink);
-    console.log('======================================\n');
+    const isDev = process.env.NODE_ENV === 'development';
+
+    // The link is a login credential, so only log it for local development
+    if (isDev) {
+      console.log(`🔑 PASSWORDLESS MAGIC LINK FOR: ${email}`);
+      console.log(magicLink);
+    }
 
     // Send email using nodemailer if SMTP is configured
     const smtpHost = process.env.SMTP_HOST;
@@ -88,18 +90,20 @@ export async function POST(request: Request) {
       }
     }
 
-    // In local development, we return the link directly to the response for a quick login loop!
-    const isDev = process.env.NODE_ENV === 'development';
+    // In production the emailed link is the only way in, so report a failed send
+    if (!emailSent && !isDev) {
+      return NextResponse.json(
+        { error: 'We could not send your sign-in email. Please try again shortly.' },
+        { status: 502 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
-      message: emailSent 
-        ? 'Magic link has been sent to your email address!' 
-        : 'Magic link generated successfully! (SMTP not configured or failed)',
-      // Expose link only in development mode
-      link: isDev ? magicLink : null,
       emailSent,
-      emailError,
+      // Expose the link and any SMTP error only in development mode
+      link: isDev ? magicLink : null,
+      emailError: isDev ? emailError : null,
     });
   } catch (error) {
     console.error('Magic link generation error:', error);

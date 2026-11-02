@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { cookies } from 'next/headers';
 import { v2 as cloudinary } from 'cloudinary';
+import { isMusicTrack } from '@/lib/cardText';
 
 
 
@@ -70,7 +71,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, age, wishes, theme, music, effects, images } = body;
+    const { name, age, wishes, theme, music, effects, images, lang, mode } = body;
 
     if (!name || !wishes) {
       return NextResponse.json({ error: 'Recipient name and wishes are required.' }, { status: 400 });
@@ -92,9 +93,11 @@ export async function POST(request: Request) {
         age: parsedAge,
         wishes,
         theme,
-        music,
+        music: isMusicTrack(music) ? music : 'none',
         effects: Array.isArray(effects) ? effects : [],
-        images: imagesList
+        images: imagesList,
+        lang: lang === 'si' || lang === 'en' ? lang : null,
+        mode: mode === 'dark' || mode === 'light' ? mode : null,
       }
     });
 
